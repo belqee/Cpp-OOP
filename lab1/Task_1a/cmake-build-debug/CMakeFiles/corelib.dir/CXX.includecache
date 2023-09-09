@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/Working directory/NSU/nsu-repository/lab1/Task_1a/module3.cpp
+module3.h
+D:/Working directory/NSU/nsu-repository/lab1/Task_1a/module3.h
+
+D:/Working directory/NSU/nsu-repository/lab1/Task_1a/module3.h
+string
+-
+

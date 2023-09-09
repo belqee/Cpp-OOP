@@ -1,0 +1,5 @@
+"C:\Program Files\JetBrains\CLion 2019.2.5\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" "D:\Working directory\NSU\nsu-repository\lab1\Task_1a"
+-- Could NOT find Python (missing: Python_EXECUTABLE Interpreter) 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/Working directory/NSU/nsu-repository/lab1/Task_1a/cmake-build-debug
