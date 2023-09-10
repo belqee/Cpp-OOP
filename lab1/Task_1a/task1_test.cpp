@@ -1,14 +1,14 @@
 
-#include "module1.h"
+#include "module3.h"
 #include "gtest/gtest.h"
 
 namespace {
 
 // TODO: переименовать тесты, написать реализации
-TEST(TaskTest, plus) {
-    using task::plus;
+TEST(TaskTest, getMyName3) {
+    using Module3::getMyName;
 
-    EXPECT_EQ(plus(2, 3), 5);
+    EXPECT_EQ(getMyName(), "Peter");
 }
 
 }
