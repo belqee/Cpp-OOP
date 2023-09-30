@@ -10,10 +10,9 @@
 
 using namespace std;
 
-class Word_counter {
+class word_counter_class {
 	map<string, int> alf;
 public:
-	void countWords(istream& in);
+	void count_words(istream& in);
 	void write_result(ostream& out);
-	void clear();
 };

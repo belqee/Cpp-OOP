@@ -8,25 +8,25 @@
 
 using namespace std;
 
-TEST(classWordCounter, correctOutput) {
+TEST(class_word_counter, correct_out) {
     stringstream in, out;
-    Word_counter counter;
-    //test 1
-    in << "xxx xx xxx xxx x";
-    counter.countWords(in);
+    word_counter_class counter;
+    //first test
+    in << "abc abc ab abc ab a a";
+    counter.count_words(in);
     counter.write_result(out);
 
-    EXPECT_EQ(out.str(), "xxx;3;60%\nx;1;20%\nxx;1;20%\n");
+    EXPECT_EQ(out.str(), "abc;3;42%\na;2;28%\nab;2;28%\n");
     //test 2
     in.clear();
     out.clear();
     in.str("");
     out.str("");
-    counter.clear();
 
-    in << "give papa a ,,, cup    of proper\n\n\n coffe\t in a copper coffe cup.";
-    counter.countWords(in);
+    in << "Better late ''' than ..,, never, ever never";
+    counter.count_words(in);
     counter.write_result(out);
 
-    EXPECT_EQ(out.str(), "a;2;16%\ncoffe;2;16%\ncup;2;16%\ncopper;1;8%\ngive;1;8%\nin;1;8%\nof;1;8%\npapa;1;8%\nproper;1;8%\n");
+    EXPECT_EQ(out.str(), "never;2;33%\nBetter;1;16%\never;1;16%\nlate;1;16%\nthan;1;16%\n");
 }
+
