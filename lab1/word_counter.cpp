@@ -10,7 +10,7 @@ static bool is_letter(char letter) {
 	}
 }
 
-static bool compare(pair<string, int> n1, pair<string, int> n2) {
+static bool compare(pair<string, int>& n1, pair<string, int>& n2) {
 	return (bool)(n1.second > n2.second);
 }
 
