@@ -2,11 +2,11 @@
 #include <iostream>
 #include <string>
 
-block_size BitArray::mirror_block(block_size& block) {
-	block_size reversed_num = 0;
-	for (int i = 0; i < sizeof(block_size)*8; ++i) {
+bytes_block BitArray::mirror_block(bytes_block& block) {
+	bytes_block reversed_num = 0;
+	for (int i = 0; i < sizeof(bytes_block) * 8; ++i) {
 		if ((block & (1 << i)) != 0) {
-			reversed_num |= 1 << (sizeof(block_size)*8 - 1 - i);
+			reversed_num |= 1 << (sizeof(bytes_block) * 8 - 1 - i);
 		}
 	}
 	return reversed_num;
@@ -14,7 +14,7 @@ block_size BitArray::mirror_block(block_size& block) {
 
 BitArray::BitArray() {
 	array_size = 1;
-	head = new block_size[1];
+	head = new bytes_block[1];
 	*head = 0;
 }
 
@@ -22,19 +22,19 @@ BitArray::~BitArray() {
 	delete[] head;
 }
 
-BitArray::BitArray(int num_bits, block_size value) {
+BitArray::BitArray(int num_bits, bytes_block value) {
 	if (num_bits == 0) {
 		array_size = 1;
-		head = new block_size[1];
+		head = new bytes_block[1];
 		*head = 0;
 		bits_size = 0;
 	}
 	else {
-		array_size = (num_bits - 1) / 8 / sizeof(block_size) + 1;
-		head = new block_size[array_size];
+		array_size = (num_bits - 1) / 8 / sizeof(bytes_block) + 1;
+		head = new bytes_block[array_size];
 		head[0] = mirror_block(value);
 		bits_size = num_bits;
-		for (int i = num_bits; i < sizeof(block_size)*8; ++i) {
+		for (int i = num_bits; i < sizeof(bytes_block) * 8; ++i) {
 			head[0] = (~(max_pow >> i) & head[0]);
 		}
 		if (array_size > 0) {
@@ -48,14 +48,14 @@ BitArray::BitArray(int num_bits, block_size value) {
 BitArray::BitArray(const BitArray& b) {
 	array_size = b.array_size;
 	bits_size = b.bits_size;
-	head = new block_size[b.array_size];
+	head = new bytes_block[b.array_size];
 	for (unsigned int i = 0; i < b.array_size; ++i) {
 		head[i] = b.head[i];
 	}
 }
 
 void BitArray::swap(BitArray& b) {
-	block_size* head_temp = head;
+	bytes_block* head_temp = head;
 	head = b.head;
 	b.head = head_temp;
 
@@ -71,16 +71,12 @@ void BitArray::swap(BitArray& b) {
 BitArray& BitArray::operator=(const BitArray& b) {
 	if (array_size != b.array_size) {
 		delete[] head;
-		head = new block_size[b.array_size];
+		head = new bytes_block[b.array_size];
 		array_size = b.array_size;
 	}
-	
+
 	bits_size = b.bits_size;
-	
-	//for (unsigned int i = 0; i < b.array_size; ++i) {
-	//	head[i] = b.head[i];
-	//}
-	memcpy(head, b.head, sizeof(block_size) * b.array_size);
+	memcpy(head, b.head, sizeof(bytes_block) * b.array_size);
 	return *this;
 }
 
@@ -88,11 +84,11 @@ void BitArray::resize(int num_bits, bool value) {
 	if (num_bits == (int)bits_size) {
 		return;
 	}
-	unsigned int new_array_size = (num_bits - 1) / 8 / sizeof(block_size) + 1;
+	unsigned int new_array_size = (num_bits - 1) / 8 / sizeof(bytes_block) + 1;
 	if (num_bits > (int)bits_size) {
 		if (new_array_size > array_size) {
-			block_size* new_head = new block_size[new_array_size];
-			memcpy(new_head, head, sizeof(block_size) * array_size);
+			bytes_block* new_head = new bytes_block[new_array_size];
+			memcpy(new_head, head, sizeof(bytes_block) * array_size);
 			for (unsigned int i = array_size; i < new_array_size; ++i) {
 				new_head[i] = 0;
 			}
@@ -102,19 +98,19 @@ void BitArray::resize(int num_bits, bool value) {
 		}
 		if (value == 1) {
 			for (unsigned int i = bits_size + 1; i < (unsigned int)num_bits + 1; ++i) {
-				unsigned int position = (i - 1) / 8 / sizeof(block_size);
-				head[position] = head[position] | (max_pow >> ((i % (sizeof(block_size)*8)) - 1));
+				unsigned int position = (i - 1) / 8 / sizeof(bytes_block);
+				head[position] = head[position] | (max_pow >> ((i % (sizeof(bytes_block) * 8)) - 1));
 			}
 		}
 	}
 	if (num_bits < (int)bits_size) {
 		for (unsigned int i = num_bits + 1; i < bits_size + 1; ++i) {
-			unsigned long position = (i - 1) / 8 / sizeof(block_size);
-			head[position] = head[position] & ~(max_pow >> ((i % (sizeof(block_size)*8)) - 1));
+			unsigned long position = (i - 1) / 8 / sizeof(bytes_block);
+			head[position] = head[position] & ~(max_pow >> ((i % (sizeof(bytes_block) * 8)) - 1));
 		}
 		if (new_array_size < array_size) {
-			block_size* new_head = new block_size[new_array_size];
-			memcpy(new_head, head, sizeof(block_size) * new_array_size);
+			bytes_block* new_head = new bytes_block[new_array_size];
+			memcpy(new_head, head, sizeof(bytes_block) * new_array_size);
 			delete[] head;
 			head = new_head;
 			array_size = new_array_size;
@@ -125,7 +121,7 @@ void BitArray::resize(int num_bits, bool value) {
 
 void BitArray::clear() {
 	delete[] head;
-	head = new block_size[1];
+	head = new bytes_block[1];
 	head[0] = 0;
 	array_size = 1;
 	bits_size = 0;
@@ -133,10 +129,9 @@ void BitArray::clear() {
 
 void BitArray::push_back(bool bit) {
 	bits_size += 1;
-	unsigned int new_array_size = (bits_size - 1) / 8 / sizeof(block_size) + 1;
+	unsigned int new_array_size = (bits_size - 1) / 8 / sizeof(bytes_block) + 1;
 	if (new_array_size > array_size) {
-
-		block_size* new_head = new block_size[new_array_size];
+		bytes_block* new_head = new bytes_block[new_array_size];
 		memcpy(new_head, head, array_size);
 		for (unsigned int i = array_size; i < new_array_size; ++i) {
 			new_head[i] = 0;
@@ -145,9 +140,9 @@ void BitArray::push_back(bool bit) {
 		delete[] head;
 		head = new_head;
 	}
-	unsigned int position = (bits_size - 1) / 8 / sizeof(block_size);
+	unsigned int position = (bits_size - 1) / 8 / sizeof(bytes_block);
 	if (bit == 1) {
-		head[position] = head[position] | (max_pow >> ((bits_size % (sizeof(block_size)*8)) - 1));
+		head[position] = head[position] | (max_pow >> ((bits_size % (sizeof(bytes_block) * 8)) - 1));
 	}
 }
 
@@ -182,33 +177,45 @@ BitArray& BitArray::operator^=(const BitArray& b) {
 }
 
 BitArray& BitArray::operator<<=(int n) {
-	for (int i = 0; i < n; ++i) {
-		for (unsigned int j = 0; j < this->array_size; ++j) {
-			bool sign = 0;
-			if (j + 1 < array_size) {
-				sign = max_pow & head[j + 1];
-			}
-			head[j] = head[j] << 1;
-			if (sign != 0) {
-				head[j] = head[j] | 1;
-			}
+	if (n > (int)bits_size) {
+		for (unsigned int i = 0; i < array_size; ++i) {
+			head[i] = 0;
 		}
+	}
+	for (unsigned int i = n + 1; i <= bits_size; ++i) {
+		unsigned int pos = (i - 1 - n) / 8 / sizeof(bytes_block);
+		if ((head[(i - 1) / 8 / sizeof(bytes_block)] & (max_pow >> ((i % (sizeof(bytes_block) * 8)) - 1))) == 0) {
+			head[pos] = head[pos] & ~(max_pow >> (((i - n) % (sizeof(bytes_block) * 8)) - 1));
+		}
+		else {
+			head[pos] = head[pos] | (max_pow >> (((i - n) % (sizeof(bytes_block) * 8)) - 1));
+		}
+	}
+	for (unsigned int i = bits_size - n + 1; i <= bits_size; ++i) {
+		unsigned int pos = (i - 1) / 8 / sizeof(bytes_block);
+		head[pos] = head[pos] & ~(max_pow >> ((i - 1) % (sizeof(bytes_block) * 8)));
 	}
 	return *this;
 }
 
 BitArray& BitArray::operator>>=(int n) {
-	for (int i = 0; i < n; ++i) {
-		for (unsigned int j = 0; j < this->array_size; ++j) {
-			bool sign = 0;
-			if (j + 1 < array_size) {
-				sign = 1 & head[j];
-			}
-			head[j] = head[j] >> 1;
-			if (sign != 0) {
-				head[j + 1] = head[j + 1] | max_pow;
-			}
+	if (n > (int)bits_size) {
+		for (unsigned int i = 0; i < array_size; ++i) {
+			head[i] = 0;
 		}
+	}
+	for (unsigned int i = bits_size - n; i >= 1; --i) {
+		unsigned int pos = (i + n - 1) / 8 / sizeof(bytes_block);
+		if ((head[(i - 1) / 8 / sizeof(bytes_block)] & (max_pow >> ((i % (sizeof(bytes_block) * 8)) - 1))) == 0) {
+			head[pos] = head[pos] & ~(max_pow >> (((i + n) % (sizeof(bytes_block) * 8)) - 1));
+		}
+		else {
+			head[pos] = head[pos] | (max_pow >> (((i + n) % (sizeof(bytes_block) * 8)) - 1));
+		}
+	}
+	for (int i = 1; i <= n; ++i) {
+		unsigned int pos = (i - 1) / 8 / sizeof(bytes_block);
+		head[pos] = head[pos] & ~(max_pow >> ((i - 1) % (sizeof(bytes_block) * 8)));
 	}
 	return *this;
 }
@@ -229,12 +236,12 @@ BitArray& BitArray::set(int n, bool val) {
 	if (n >= (int)bits_size) {
 		return *this;
 	}
-	int position = (n - 1) / 8 / sizeof(block_size);
+	int position = (n - 1) / 8 / sizeof(bytes_block);
 	if (val == 1) {
-		head[position] = head[position] | max_pow >> (n % (sizeof(block_size)*8));
+		head[position] = head[position] | max_pow >> (n % (sizeof(bytes_block) * 8));
 	}
 	if (val == 0) {
-		head[position] = head[position] & ~(max_pow >> (n % (sizeof(block_size)*8)));
+		head[position] = head[position] & ~(max_pow >> (n % (sizeof(bytes_block) * 8)));
 	}
 	return *this;
 }
@@ -243,7 +250,7 @@ BitArray& BitArray::set() {
 	for (unsigned int i = 0; i < array_size - 1; ++i) {
 		head[i] = ~(unsigned int)0;
 	}
-	for (unsigned int i = 0; i < bits_size % (sizeof(block_size)*8); ++i) {
+	for (unsigned int i = 0; i < bits_size % (sizeof(bytes_block) * 8); ++i) {
 		head[array_size - 1] = head[array_size - 1] | max_pow >> i;
 	}
 	return *this;
@@ -253,8 +260,8 @@ BitArray& BitArray::reset(int n) {
 	if (n >= (int)bits_size) {
 		return *this;
 	}
-	int position = (n - 1) / 8 / sizeof(block_size);
-	head[position] = head[position] & ~(max_pow >> (n % (sizeof(block_size)*8)));
+	int position = (n - 1) / 8 / sizeof(bytes_block);
+	head[position] = head[position] & ~(max_pow >> (n % (sizeof(bytes_block) * 8)));
 	return *this;
 }
 
@@ -289,13 +296,13 @@ bool BitArray::none() const {
 
 BitArray BitArray::operator~() const {
 	BitArray result;
-	result.head = new block_size[array_size];
+	result.head = new bytes_block[array_size];
 	result.array_size = array_size;
 	result.bits_size = bits_size;
 	for (unsigned int i = 0; i < array_size; ++i) {
 		result.head[i] = ~head[i];
 	}
-	for (unsigned int i = bits_size % (sizeof(block_size) * 8); i < (sizeof(block_size)*8); ++i) {
+	for (unsigned int i = bits_size % (sizeof(bytes_block) * 8); i < (sizeof(bytes_block) * 8); ++i) {
 		result.head[array_size - 1] = result.head[array_size - 1] & ~(max_pow >> i);
 	}
 	return result;
@@ -304,8 +311,8 @@ BitArray BitArray::operator~() const {
 int BitArray::count() const {
 	int result = 0;
 	for (unsigned int i = 0; i < array_size; ++i) {
-		for (int j = 0; j < sizeof(block_size) * 8; ++j) {
-			if (i * (sizeof(block_size)*8) + j >= bits_size) {
+		for (int j = 0; j < sizeof(bytes_block) * 8; ++j) {
+			if (i * (sizeof(bytes_block) * 8) + j >= bits_size) {
 				break;
 			}
 			bool temp = head[i] & (max_pow >> j);
@@ -321,8 +328,7 @@ bool BitArray::operator[](int i) const {
 	if ((unsigned int)i >= bits_size) {
 		throw std::exception("out of array");
 	}
-	return (bool)(head[(i - 1) / 8 / sizeof(block_size)] & (max_pow >> (i % (sizeof(block_size)*8))));
-
+	return (bool)(head[(i - 1) / 8 / sizeof(bytes_block)] & (max_pow >> (i % (sizeof(bytes_block) * 8))));
 }
 
 int BitArray::size() const {
@@ -337,23 +343,19 @@ bool BitArray::empty() const {
 }
 
 BitArray operator&(const BitArray& b1, const BitArray& b2) {
-	BitArray result;
+	BitArray result(b1);
 	if (b1.size() != b2.size()) {
-		return result;
+		throw std::exception("the sizes of the arrays do not match");
 	}
-	result.resize(b1.size(), 1);
-	result &= b1;
 	result &= b2;
 	return result;
 }
 
 BitArray operator|(const BitArray& b1, const BitArray& b2) {
-	BitArray result;
+	BitArray result(b1);
 	if (b1.size() != b2.size()) {
-		return result;
+		throw std::exception("the sizes of the arrays do not match");
 	}
-	result.resize(b1.size(), 0);
-	result |= b1;
 	result |= b2;
 	return result;
 }
@@ -373,7 +375,7 @@ bool operator==(const BitArray& a, const BitArray& b) {
 	if (a.size() != b.size()) {
 		return false;
 	}
-	if (a.to_string() == b.to_string()){
+	if (a.to_string() == b.to_string()) {
 		return true;
 	}
 	return false;
@@ -386,8 +388,8 @@ bool operator!=(const BitArray& a, const BitArray& b) {
 std::string BitArray::to_string() const {
 	std::string result = "";
 	for (unsigned int i = 0; i < array_size; ++i) {
-		for (int j = 0; j < sizeof(block_size) * 8; ++j) {
-			if (i * (sizeof(block_size)*8) + j >= bits_size) {
+		for (int j = 0; j < sizeof(bytes_block) * 8; ++j) {
+			if (i * (sizeof(bytes_block) * 8) + j >= bits_size) {
 				break;
 			}
 			bool temp = head[i] & (max_pow >> j);

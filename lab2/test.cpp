@@ -79,9 +79,9 @@ TEST(BitArrayTest, inc_oprtr_XOR) {
 }
 
 TEST(BitArrayTest, inc_oprtr_left_shift) {
-	BitArray a(4, 7);
+	BitArray a(4, 9);
 	a <<= 2;
-	EXPECT_EQ(a.to_string(), "1000");
+	EXPECT_EQ(a.to_string(), "0100");
 }
 
 TEST(BitArrayTest, inc_oprtr_right_shift) {

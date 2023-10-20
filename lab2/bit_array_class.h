@@ -1,18 +1,18 @@
 #include <iostream>
 #include <string>
 
-typedef unsigned int block_size;
+typedef unsigned int bytes_block;
 class BitArray
 {
 private: 
-	block_size* head = nullptr;
+	bytes_block* head = nullptr;
 	unsigned int array_size = 0;
 	unsigned int bits_size = 0;
-	const block_size max_pow = block_size(1 << (sizeof(block_size) * 8 - 1));
+	const bytes_block max_pow = bytes_block(1 << (sizeof(bytes_block) * 8 - 1));
 	//This method takes a block of type block_size and returns 
 	//the reversed version of the block.It iterates through 
 	//each bit in the block and constructs a new block with the bits reversed.
-	block_size mirror_block(block_size& block);
+	bytes_block mirror_block(bytes_block& block);
 public:
 
 	//This is the default constructor for the BitArray class. 
@@ -26,9 +26,9 @@ public:
 
 	//This constructor creates a BitArray object with 
 	//the specified number of bits and initializes it for the 
-	//first sizeof(long) bits with the given value. 
+	//first sizeof(int) bits with the given value. 
 	//If the number of bits is 0, it creates an empty array with a single block set to 0.
-	explicit BitArray(int num_bits, block_size value = 0);
+	explicit BitArray(int num_bits, bytes_block value = 0);
 
 	//Copy constructor for the BitArray class.
 	//b is the BitArray object to be copied.
