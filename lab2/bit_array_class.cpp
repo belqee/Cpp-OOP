@@ -176,7 +176,7 @@ BitArray& BitArray::operator^=(const BitArray& b) {
 	return *this;
 }
 
-BitArray& BitArray::operator<<=(int n) {
+BitArray& BitArray::operator<<=(int n) { // этот надо бы сделать как правый сдвиг но мне уже впадлу
 	if (n > (int)bits_size) {
 		for (unsigned int i = 0; i < array_size; ++i) {
 			head[i] = 0;
@@ -204,19 +204,23 @@ BitArray& BitArray::operator>>=(int n) {
 			head[i] = 0;
 		}
 	}
-	for (unsigned int i = bits_size - n; i >= 1; --i) {
-		unsigned int pos = (i + n - 1) / 8 / sizeof(bytes_block);
-		if ((head[(i - 1) / 8 / sizeof(bytes_block)] & (max_pow >> ((i % (sizeof(bytes_block) * 8)) - 1))) == 0) {
-			head[pos] = head[pos] & ~(max_pow >> (((i + n) % (sizeof(bytes_block) * 8)) - 1));
-		}
-		else {
-			head[pos] = head[pos] | (max_pow >> (((i + n) % (sizeof(bytes_block) * 8)) - 1));
+	int big_shift = n / (8 * sizeof(bytes_block));
+	for (int i = (int)(array_size - big_shift - 1); i >= 0; --i) {
+		head[i + big_shift] = head[i];
+	}
+	for (unsigned int i = 0; i < (unsigned int)big_shift; ++i) {
+		head[i] = 0;
+	}
+	unsigned int small_shift = n % (8 * sizeof(bytes_block));
+	if (small_shift == 0) {
+		return *this;
+	}
+	if (big_shift != 0) {
+		for (int i = (int)array_size - 1; i >= big_shift; --i) {
+			head[i] = (head[i] >> small_shift) | (head[i - 1] << (sizeof(bytes_block) * 8 - small_shift));
 		}
 	}
-	for (int i = 1; i <= n; ++i) {
-		unsigned int pos = (i - 1) / 8 / sizeof(bytes_block);
-		head[pos] = head[pos] & ~(max_pow >> ((i - 1) % (sizeof(bytes_block) * 8)));
-	}
+	head[0] = head[0] >> small_shift;
 	return *this;
 }
 
@@ -361,12 +365,10 @@ BitArray operator|(const BitArray& b1, const BitArray& b2) {
 }
 
 BitArray operator^(const BitArray& b1, const BitArray& b2) {
-	BitArray result;
+	BitArray result(b1);
 	if (b1.size() != b2.size()) {
-		return result;
+		throw std::exception("the sizes of the arrays do not match");
 	}
-	result.resize(b1.size(), 0);
-	result |= b1;
 	result ^= b2;
 	return result;
 }

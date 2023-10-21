@@ -5,9 +5,9 @@
 using namespace std;
 
 int main() {
-	BitArray a(6,9);
+	BitArray a(128,7);
 	cout << a.to_string() << endl;
-	a >>= 2;
+	a >>= 124;
 	cout << a.to_string() << endl;
 	return EXIT_SUCCESS;
 }
