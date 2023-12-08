@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <forward_list>
 
 using namespace std;
 
@@ -27,16 +28,18 @@ public:
 class Universe {
 private:
 	
-	int size_x = 100;
-	int size_y = 100;
-	int birth_rule[9];
-	int survive_rule[9];
+	const int size_x = 118;
+	const int size_y = 28;
+	set<int> birth_rule = { 3,4};
+	set<int> survive_rule = { 2,3};
+	
 public:
+	int count_around_alive(int x, int y);
 	set<Cell> cells;
 	void insert(int x, int y);
 	int get_size_x();
 	int get_size_y();
-	int calculate_next();
+	void calculate_next();
 };
 
 class FormatReader {
@@ -48,8 +51,8 @@ public:
 
 class Console {
 public:
-	void show(Universe universe);
-	void change_console_size(Universe universe);
+	void show_by_position(Universe universe);
+	void show_sync(Universe universe);
 };
 
 class OnlineMode {
