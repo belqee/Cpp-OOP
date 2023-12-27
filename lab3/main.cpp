@@ -8,29 +8,21 @@ using namespace std;
 //      ...  
 //      27
 
-int main() {
-    Universe universe;
-    universe.insert(1, 0);
-    universe.insert(0, 2);
-    universe.insert(1, 2);
-    universe.insert(2, 2);
-    universe.insert(2, 1);
-
-    universe.insert(20, 5);
-    universe.insert(20, 6);
-    universe.insert(21, 5);
-    universe.insert(21, 6);
-    Console console;
+int main(int argc, char* argv[]) {
+    if (argc == 6 && strcmp(argv[2], "-i") == 0 && strcmp(argv[4], "-o") == 0) {
+        OfflineMode game;
+        game.start(argv);
+    }
+    else {
+        cout << "!" << argc << argv[2] << argv[4];
+    }
     
-
-    for (int i = 0; i < 500; ++i) {
+    /*for (int i = 0; i < 500; ++i) {
         console.show_sync(universe);
         universe.calculate_next();
         Sleep(50);
-        cout << universe.count_around_alive(0,2);
-    }
-
-  
+    }*/
+    Sleep(1000);
   
 	return EXIT_SUCCESS;
 }

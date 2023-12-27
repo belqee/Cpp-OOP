@@ -1,5 +1,14 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 
-project(MyProject)
+set(CMAKE_CXX_STANDARD 17)
 
-add_executable(lab3 main.cpp GameLife.cpp)
+project(Life)
+
+set(exe_name ${PROJECT_NAME})
+
+set(test_name test)
+
+add_library(corelib OBJECT GameLife.cpp )
+
+add_executable(${exe_name} main.cpp)
+target_link_libraries(${exe_name} corelib)
