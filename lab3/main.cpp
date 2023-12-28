@@ -1,28 +1,24 @@
-﻿#include <iostream>
-#include "GameLife.h"
+﻿#include "GameLife.h"
+#include <iostream>
 #include <windows.h>
 using namespace std;
 
 // поле 0 1 .. 117
 //      1 ...
-//      ...  
+//      ...
 //      27
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     if (argc == 6 && strcmp(argv[2], "-i") == 0 && strcmp(argv[4], "-o") == 0) {
         OfflineMode game;
         game.start(argv);
-    }
-    else {
+    } else if (argc == 2) {
+        OnlineMode game;
+        game.start(argv);
+    } else {
         cout << "!" << argc << argv[2] << argv[4];
     }
-    
-    /*for (int i = 0; i < 500; ++i) {
-        console.show_sync(universe);
-        universe.calculate_next();
-        Sleep(50);
-    }*/
-    Sleep(1000);
-  
-	return EXIT_SUCCESS;
+
+    return EXIT_SUCCESS;
 }

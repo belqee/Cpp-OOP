@@ -87,6 +87,24 @@ void Universe::set_rules(set<int> B, set<int> S)
     this->survive_rule = S;
 }
 
+int Console::read_command(OnlineMode& game)
+{
+    string is_dump;
+    string filename;
+    string is_tick = "";
+    string tick = "";
+    cin >> is_dump >> filename >> is_tick >> tick;
+    if (is_dump == "dump" && filename != "") {
+        game.output_filename = filename;
+    } else
+        return 1;
+    if (is_tick == "tick" && tick != "") {
+        game.iterations_count = stoi(tick);
+    } else
+        return 2;
+    return 0;
+}
+
 void Console::clear()
 {
     system("cls");
@@ -243,15 +261,14 @@ forward_list<string> FormatReader::analyze_file(ifstream& input, Universe& unive
             } else {
                 cout << "Substring not found" << endl;
             }
+        EndFlag:
             universe.set_rules(birth_rule, survive_rule);
-        EndFlag:;
         } else if (k >= 4) {
             int x, y;
             std::istringstream iss(line);
             iss >> x >> y;
             universe.insert(x, y);
         }
-        // cout << line << endl;
     }
     if (k < 4) {
         errors.push_front("Critical error: Not enough information for starting");
@@ -300,5 +317,55 @@ int OfflineMode::start(char* argv[])
     cout << "game saved succesfully";
     input.close();
     output.close();
+    return 0;
+}
+
+int OnlineMode::start(char* argv[])
+{
+    ifstream input;
+    input.open(argv[1]);
+    if (!input.is_open()) {
+        cout << "Something went wrong while opening input file" << endl;
+        return 1;
+    }
+    forward_list<string> errors = reader.analyze_file(input, universe);
+    console.clear();
+    if (console.show_errors(errors) == 1)
+        return 1;
+    input.clear();
+    input.seekg(0, ios::beg);
+    cout << "Waiting for command: ";
+    int flag = console.read_command(*this);
+    if (flag != 0) {
+        return 1;
+    }
+    cout << "3 ";
+    Sleep(1000);
+    cout << "2 ";
+    Sleep(1000);
+    cout << "1 ";
+    Sleep(1000);
+    cout << "The game starts";
+    Sleep(1000);
+    console.clear();
+    for (int i = 0; i < iterations_count; ++i) {
+        console.show_sync(universe);
+        universe.calculate_next();
+        Sleep(50);
+    }
+    ofstream output;
+    output.open(output_filename);
+    string line;
+    for (int i = 0; i < 3 && getline(input, line); ++i) {
+        output << line << endl;
+    }
+    for (Cell cell : universe.cells) {
+        line = "";
+        line += to_string(cell.get_x());
+        line += ' ';
+        line += to_string(cell.get_y());
+        output << line << endl;
+    }
+    cout << "game saved succesfully";
     return 0;
 }

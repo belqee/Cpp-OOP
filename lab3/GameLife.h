@@ -1,12 +1,12 @@
 #pragma once
-#include <windows.h>
+#include <cstdlib>
 #include <forward_list>
 #include <fstream>
 #include <iostream>
 #include <set>
-#include <string>
-#include <cstdlib>
 #include <sstream>
+#include <string>
+#include <windows.h>
 
 using namespace std;
 
@@ -37,6 +37,7 @@ private:
     set<int> birth_rule = { 3 };
     set<int> survive_rule = { 2, 3 };
     int count_around_alive(int x, int y);
+
 public:
     void set_name(string name);
 
@@ -56,8 +57,11 @@ public:
     forward_list<string> analyze_file(ifstream& input, Universe& universe);
 };
 
+class OnlineMode;
+
 class Console {
 public:
+    int read_command(OnlineMode& game);
     void clear();
     int show_errors(forward_list<string> errors);
     void show_by_position(Universe universe);
@@ -66,13 +70,16 @@ public:
 
 class OnlineMode {
 private:
-    int iterations_count;
+    Universe universe;
+    FormatReader reader;
+    Console console;
+    int iterations_count = 1;
     string initial_filename;
     string output_filename;
-    void exit();
 
 public:
-    int start();
+    int start(char* argv[]);
+    friend int Console::read_command(OnlineMode& game);
 };
 
 class OfflineMode {
@@ -80,7 +87,7 @@ private:
     Universe universe;
     FormatReader reader;
     Console console;
-    int iterations_count;
+    int iterations_count = 1;
     string initial_filename;
     string output_filename;
 
